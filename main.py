@@ -1,28 +1,21 @@
 from tkinter import *
 
-def zmien_tekst():
-    etykieta.config(text="Kliknięto przycisk 1!")
-
-def pokaz_powitanie():
-    etykieta.config(text="Witaj ponownie!")
-
-def wyczysc_tekst():
-    etykieta.config(text="")
-
 root = Tk()
-root.title("Moja aplikacja")
-root.geometry("400x300")
+root.title("Zarządzanie stacjami")
+root.geometry("800x200")
 
-etykieta = Label(root, text="Witaj w aplikacji!", font=("Arial", 14))
-etykieta.pack(pady=20)
+frame1 = Frame(root)
+frame1.pack(pady=10)
 
-przycisk1 = Button(root, text="Przycisk 1", command=zmien_tekst)
-przycisk1.pack(pady=5)
+Button(frame1, text="Stacje", width=15, command=lambda: print("Stacje")).pack(side=LEFT, padx=5)
+Button(frame1, text="Pracownicy", width=15, command=lambda: print("Pracownicy")).pack(side=LEFT, padx=5)
+Button(frame1, text="Klienci", width=15, command=lambda: print("Klienci")).pack(side=LEFT, padx=5)
 
-przycisk2 = Button(root, text="Pokaż powitanie", command=pokaz_powitanie)
-przycisk2.pack(pady=5)
+frame2 = Frame(root)
+frame2.pack(pady=10)
 
-przycisk3 = Button(root, text="Wyczyść tekst", command=wyczysc_tekst)
-przycisk3.pack(pady=5)
+Button(frame2, text="Mapa: Stacje", width=15, command=lambda: print("Mapa stacji")).pack(side=LEFT, padx=5)
+Button(frame2, text="Mapa: Pracownicy", width=15, command=lambda: print("Mapa pracowników")).pack(side=LEFT, padx=5)
+Button(frame2, text="Mapa: Klienci", width=15, command=lambda: print("Mapa klientów")).pack(side=LEFT, padx=5)
 
 root.mainloop()
