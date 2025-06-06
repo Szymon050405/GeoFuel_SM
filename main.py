@@ -103,6 +103,19 @@ class StationManagerApp:
 
         def add_item():
             values = tuple(entry.get() for entry in entries_dict.values())
+            try:
+                if not entries_dict['id'].get().isdigit():
+                    raise ValueError
+                if 'imię' in entries_dict and not entries_dict['imię'].get().isalpha():
+                    raise ValueError
+                if 'nazwisko' in entries_dict and not entries_dict['nazwisko'].get().isalpha():
+                    raise ValueError
+                if 'koordynaty' in entries_dict:
+                    float(entries_dict['koordynaty'].get().replace(',', '.'))
+            except:
+                messagebox.showerror("Błąd", "Popraw dane")
+                return
+
             if any(v == "" for v in values):
                 messagebox.showerror("Błąd", "Wszystkie pola muszą być wypełnione.")
                 return
