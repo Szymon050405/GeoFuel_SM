@@ -9,7 +9,6 @@ class StationManagerApp:
 
         self.tab_control = ttk.Notebook(root)
 
-        # Tworzenie zakładek
         self.station_tab = ttk.Frame(self.tab_control)
         self.employee_tab = ttk.Frame(self.tab_control)
         self.client_tab = ttk.Frame(self.tab_control)
@@ -27,8 +26,7 @@ class StationManagerApp:
         self.setup_client_tab()
         self.setup_map_tab()
 
-    # -------------------------------------
-    # Zakładka: Stacje
+    # ---------------- Zakładka STACJE ----------------
     def setup_station_tab(self):
         label = tk.Label(self.station_tab, text="Stacje Benzynowe", font=("Arial", 14))
         label.pack(pady=10)
@@ -40,115 +38,111 @@ class StationManagerApp:
             self.station_tree.column(col, width=150)
         self.station_tree.pack(expand=True, fill="both", padx=20, pady=10)
 
-        self.station_tree.insert("", "end", values=(1, "Stacja A", "ul. Główna 1", "50.061, 19.938"))
-        self.station_tree.insert("", "end", values=(2, "Stacja B", "ul. Krakowska 22", "50.067, 19.912"))
+        form_frame = self.create_form_frame(self.station_tab, columns)
+        self.station_entries = form_frame['entries']
+        self.create_crud_buttons(form_frame['frame'], self.station_entries, self.station_tree)
 
-        form_frame = tk.Frame(self.station_tab)
-        form_frame.pack(pady=10, fill="x", padx=20)
-
-        # Pola tekstowe
-        tk.Label(form_frame, text="ID").grid(row=0, column=0)
-        self.station_id_entry = tk.Entry(form_frame, width=10)
-        self.station_id_entry.grid(row=1, column=0, padx=5)
-
-        tk.Label(form_frame, text="Nazwa").grid(row=0, column=1)
-        self.station_name_entry = tk.Entry(form_frame)
-        self.station_name_entry.grid(row=1, column=1, padx=5)
-
-        tk.Label(form_frame, text="Adres").grid(row=0, column=2)
-        self.station_address_entry = tk.Entry(form_frame, width=30)
-        self.station_address_entry.grid(row=1, column=2, padx=5)
-
-        tk.Label(form_frame, text="Koordynaty").grid(row=0, column=3)
-        self.station_coord_entry = tk.Entry(form_frame)
-        self.station_coord_entry.grid(row=1, column=3, padx=5)
-
-        # Przyciski
-        button_frame = tk.Frame(form_frame)
-        button_frame.grid(row=1, column=4, padx=10)
-
-        tk.Button(button_frame, text="Dodaj", command=self.add_station).pack(pady=2)
-        tk.Button(button_frame, text="Załaduj", command=self.load_station).pack(pady=2)
-        tk.Button(button_frame, text="Zapisz", command=self.save_station).pack(pady=2)
-        tk.Button(button_frame, text="Usuń", command=self.delete_station).pack(pady=2)
-
-    def add_station(self):
-        values = (
-            self.station_id_entry.get(),
-            self.station_name_entry.get(),
-            self.station_address_entry.get(),
-            self.station_coord_entry.get()
-        )
-        if any(v == "" for v in values):
-            messagebox.showerror("Błąd", "Wszystkie pola muszą być wypełnione.")
-            return
-        self.station_tree.insert("", "end", values=values)
-        self.clear_station_fields()
-
-    def load_station(self):
-        selected = self.station_tree.selection()
-        if not selected:
-            messagebox.showwarning("Brak wyboru", "Zaznacz stację.")
-            return
-        values = self.station_tree.item(selected[0], "values")
-        self.station_id_entry.delete(0, tk.END)
-        self.station_name_entry.delete(0, tk.END)
-        self.station_address_entry.delete(0, tk.END)
-        self.station_coord_entry.delete(0, tk.END)
-        self.station_id_entry.insert(0, values[0])
-        self.station_name_entry.insert(0, values[1])
-        self.station_address_entry.insert(0, values[2])
-        self.station_coord_entry.insert(0, values[3])
-
-    def save_station(self):
-        selected = self.station_tree.selection()
-        if not selected:
-            messagebox.showwarning("Brak wyboru", "Zaznacz stację.")
-            return
-        new_values = (
-            self.station_id_entry.get(),
-            self.station_name_entry.get(),
-            self.station_address_entry.get(),
-            self.station_coord_entry.get()
-        )
-        self.station_tree.item(selected[0], values=new_values)
-        self.clear_station_fields()
-
-    def delete_station(self):
-        selected = self.station_tree.selection()
-        if not selected:
-            messagebox.showwarning("Brak wyboru", "Zaznacz stację.")
-            return
-        if messagebox.askyesno("Potwierdzenie", "Usunąć zaznaczoną stację?"):
-            self.station_tree.delete(selected[0])
-            self.clear_station_fields()
-
-    def clear_station_fields(self):
-        self.station_id_entry.delete(0, tk.END)
-        self.station_name_entry.delete(0, tk.END)
-        self.station_address_entry.delete(0, tk.END)
-        self.station_coord_entry.delete(0, tk.END)
-
-    # -------------------------------------
-    # Zakładka: Pracownicy
+    # ---------------- Zakładka PRACOWNICY ----------------
     def setup_employee_tab(self):
-        label = tk.Label(self.employee_tab, text="Lista pracowników (do rozbudowy)", font=("Arial", 14))
-        label.pack(pady=20)
+        label = tk.Label(self.employee_tab, text="Pracownicy", font=("Arial", 14))
+        label.pack(pady=10)
 
-    # -------------------------------------
-    # Zakładka: Klienci
+        columns = ("id", "imię", "nazwisko", "stacja", "koordynaty")
+        self.employee_tree = ttk.Treeview(self.employee_tab, columns=columns, show="headings")
+        for col in columns:
+            self.employee_tree.heading(col, text=col.capitalize())
+            self.employee_tree.column(col, width=150)
+        self.employee_tree.pack(expand=True, fill="both", padx=20, pady=10)
+
+        form_frame = self.create_form_frame(self.employee_tab, columns)
+        self.employee_entries = form_frame['entries']
+        self.create_crud_buttons(form_frame['frame'], self.employee_entries, self.employee_tree)
+
+    # ---------------- Zakładka KLIENCI ----------------
     def setup_client_tab(self):
-        label = tk.Label(self.client_tab, text="Lista klientów (do rozbudowy)", font=("Arial", 14))
-        label.pack(pady=20)
+        label = tk.Label(self.client_tab, text="Klienci", font=("Arial", 14))
+        label.pack(pady=10)
 
-    # -------------------------------------
-    # Zakładka: Mapy
+        columns = ("id", "imię", "nazwisko", "adres", "koordynaty")
+        self.client_tree = ttk.Treeview(self.client_tab, columns=columns, show="headings")
+        for col in columns:
+            self.client_tree.heading(col, text=col.capitalize())
+            self.client_tree.column(col, width=150)
+        self.client_tree.pack(expand=True, fill="both", padx=20, pady=10)
+
+        form_frame = self.create_form_frame(self.client_tab, columns)
+        self.client_entries = form_frame['entries']
+        self.create_crud_buttons(form_frame['frame'], self.client_entries, self.client_tree)
+
+    # ---------------- Zakładka MAPY ----------------
     def setup_map_tab(self):
         label = tk.Label(self.map_tab, text="Tu będą mapy (do rozbudowy)", font=("Arial", 14))
         label.pack(pady=20)
 
-# -------------------------------------
-# Uruchomienie aplikacji
+    # ---------------- Pomocnicze ----------------
+    def create_form_frame(self, parent, fields):
+        frame = tk.Frame(parent)
+        frame.pack(pady=10, fill="x", padx=20)
+        entries = {}
+
+        for i, field in enumerate(fields):
+            tk.Label(frame, text=field.capitalize()).grid(row=0, column=i)
+            entry = tk.Entry(frame, width=15)
+            entry.grid(row=1, column=i, padx=5)
+            entries[field] = entry
+
+        return {"frame": frame, "entries": entries}
+
+    def create_crud_buttons(self, parent_frame, entries_dict, tree_widget):
+        button_frame = tk.Frame(parent_frame)
+        button_frame.grid(row=1, column=len(entries_dict), padx=10)
+
+        def clear_entries():
+            for entry in entries_dict.values():
+                entry.delete(0, tk.END)
+
+        def add_item():
+            values = tuple(entry.get() for entry in entries_dict.values())
+            if any(v == "" for v in values):
+                messagebox.showerror("Błąd", "Wszystkie pola muszą być wypełnione.")
+                return
+            tree_widget.insert("", "end", values=values)
+            clear_entries()
+
+        def load_item():
+            selected = tree_widget.selection()
+            if not selected:
+                messagebox.showwarning("Brak wyboru", "Zaznacz rekord.")
+                return
+            values = tree_widget.item(selected[0], "values")
+            for (key, entry), value in zip(entries_dict.items(), values):
+                entry.delete(0, tk.END)
+                entry.insert(0, value)
+
+        def save_item():
+            selected = tree_widget.selection()
+            if not selected:
+                messagebox.showwarning("Brak wyboru", "Zaznacz rekord.")
+                return
+            new_values = tuple(entry.get() for entry in entries_dict.values())
+            tree_widget.item(selected[0], values=new_values)
+            clear_entries()
+
+        def delete_item():
+            selected = tree_widget.selection()
+            if not selected:
+                messagebox.showwarning("Brak wyboru", "Zaznacz rekord.")
+                return
+            if messagebox.askyesno("Potwierdź", "Usunąć zaznaczony rekord?"):
+                tree_widget.delete(selected[0])
+                clear_entries()
+
+        tk.Button(button_frame, text="Dodaj", command=add_item).pack(pady=2)
+        tk.Button(button_frame, text="Załaduj", command=load_item).pack(pady=2)
+        tk.Button(button_frame, text="Zapisz", command=save_item).pack(pady=2)
+        tk.Button(button_frame, text="Usuń", command=delete_item).pack(pady=2)
+
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = StationManagerApp(root)
