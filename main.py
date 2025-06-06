@@ -142,7 +142,7 @@ class StationManagerApp:
         tk.Button(button_frame, text="Zapisz", command=save_item).pack(pady=2)
         tk.Button(button_frame, text="Usuń", command=delete_item).pack(pady=2)
 
-
+# ---------------- RUN ----------------
 if __name__ == "__main__":
     root = tk.Tk()
     app = StationManagerApp(root)
