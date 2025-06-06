@@ -111,7 +111,13 @@ class StationManagerApp:
                 if 'nazwisko' in entries_dict and not entries_dict['nazwisko'].get().isalpha():
                     raise ValueError
                 if 'koordynaty' in entries_dict:
-                    float(entries_dict['koordynaty'].get().replace(',', '.'))
+                    coord_value = entries_dict['koordynaty'].get().replace(',', '.')
+                    lat_lon = coord_value.split()
+                    if len(lat_lon) != 2:
+                        raise ValueError
+                    lat, lon = float(lat_lon[0]), float(lat_lon[1])
+                    if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+                        raise ValueError
             except:
                 messagebox.showerror("Błąd", "Popraw dane")
                 return
@@ -154,6 +160,11 @@ class StationManagerApp:
         tk.Button(button_frame, text="Załaduj", command=load_item).pack(pady=2)
         tk.Button(button_frame, text="Zapisz", command=save_item).pack(pady=2)
         tk.Button(button_frame, text="Usuń", command=delete_item).pack(pady=2)
+
+
+        # Krótka adnotacja w dolnym rogu
+        hint = tk.Label(root, text="Koordynaty: np. 50.061 19.938 – szer. dł.", font=("Arial", 8), fg="gray")
+        hint.place(relx=1.0, rely=1.0, anchor="se", x=-10, y=-10)
 
 # ---------------- RUN ----------------
 if __name__ == "__main__":
