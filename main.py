@@ -1,3 +1,5 @@
+# etap2_stacje.py
+
 import tkinter as tk
 from tkinter import ttk
 
@@ -8,17 +10,21 @@ class StationManagerApp:
         self.root.geometry("800x600")
 
         self.tab_control = ttk.Notebook(self.root)
-
-        # Puste zakładki
         self.station_tab = ttk.Frame(self.tab_control)
-        self.employee_tab = ttk.Frame(self.tab_control)
-        self.client_tab = ttk.Frame(self.tab_control)
-
         self.tab_control.add(self.station_tab, text="Stacje")
-        self.tab_control.add(self.employee_tab, text="Pracownicy")
-        self.tab_control.add(self.client_tab, text="Klienci")
-
         self.tab_control.pack(expand=1, fill="both")
+
+        self.setup_station_tab()
+
+    def setup_station_tab(self):
+        label = tk.Label(self.station_tab, text="Lista stacji benzynowych", font=("Arial", 14))
+        label.pack(pady=10)
+
+        add_button = tk.Button(self.station_tab, text="Dodaj stację", command=self.add_station)
+        add_button.pack()
+
+    def add_station(self):
+        print("Dodaj stację - przyszła logika")
 
 if __name__ == "__main__":
     root = tk.Tk()
