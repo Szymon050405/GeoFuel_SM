@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+import tkintermapview
 
 class StationManagerApp:
     def __init__(self, root):
@@ -76,8 +77,14 @@ class StationManagerApp:
 
     # ---------------- Zakładka MAPY ----------------
     def setup_map_tab(self):
-        label = tk.Label(self.map_tab, text="Tu będą mapy (do rozbudowy)", font=("Arial", 14))
-        label.pack(pady=20)
+        label = tk.Label(self.map_tab, text="Mapa obiektów (tkintermapview)", font=("Arial", 14))
+        label.pack(pady=10)
+
+        self.map_widget = tkintermapview.TkinterMapView(self.map_tab, width=1000, height=600)
+        self.map_widget.pack(fill="both", expand=True, padx=20, pady=20)
+
+        self.map_widget.set_position(52.23, 21.00)  # Warszawa
+        self.map_widget.set_zoom(6)
 
     # ---------------- Pomocnicze ----------------
     def create_form_frame(self, parent, fields):
@@ -161,9 +168,8 @@ class StationManagerApp:
         tk.Button(button_frame, text="Zapisz", command=save_item).pack(pady=2)
         tk.Button(button_frame, text="Usuń", command=delete_item).pack(pady=2)
 
-
         # Krótka adnotacja w dolnym rogu
-        hint = tk.Label(root, text="Koordynaty: np. 50.061 19.938 – szer. dł.", font=("Arial", 8), fg="gray")
+        hint = tk.Label(self.root, text="Koordynaty: np. 50.061 19.938 – szer. dł.", font=("Arial", 8), fg="gray")
         hint.place(relx=1.0, rely=1.0, anchor="se", x=-10, y=-10)
 
 # ---------------- RUN ----------------
