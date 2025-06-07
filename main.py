@@ -184,6 +184,7 @@ class StationManagerApp:
         hint = tk.Label(self.root, text="Koordynaty: np. 50.061 19.938 – szer. dł.", font=("Arial", 8), fg="gray")
         hint.place(relx=1.0, rely=1.0, anchor="se", x=-10, y=-10)
 
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = StationManagerApp(root)
