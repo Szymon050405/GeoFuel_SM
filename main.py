@@ -1,3 +1,4 @@
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 import tkintermapview
@@ -8,8 +9,9 @@ class StationManagerApp:
         self.root.title("System Zarządzania Siecią Stacji Benzynowych")
         self.root.geometry("1100x700")
 
-        self.tab_control = ttk.Notebook(root)
+        self.markers = []
 
+        self.tab_control = ttk.Notebook(root)
         self.station_tab = ttk.Frame(self.tab_control)
         self.employee_tab = ttk.Frame(self.tab_control)
         self.client_tab = ttk.Frame(self.tab_control)
@@ -27,7 +29,6 @@ class StationManagerApp:
         self.setup_client_tab()
         self.setup_map_tab()
 
-    # ---------------- Zakładka STACJE ----------------
     def setup_station_tab(self):
         label = tk.Label(self.station_tab, text="Stacje Benzynowe", font=("Arial", 14))
         label.pack(pady=10)
@@ -43,7 +44,6 @@ class StationManagerApp:
         self.station_entries = form_frame['entries']
         self.create_crud_buttons(form_frame['frame'], self.station_entries, self.station_tree)
 
-    # ---------------- Zakładka PRACOWNICY ----------------
     def setup_employee_tab(self):
         label = tk.Label(self.employee_tab, text="Pracownicy", font=("Arial", 14))
         label.pack(pady=10)
@@ -59,7 +59,6 @@ class StationManagerApp:
         self.employee_entries = form_frame['entries']
         self.create_crud_buttons(form_frame['frame'], self.employee_entries, self.employee_tree)
 
-    # ---------------- Zakładka KLIENCI ----------------
     def setup_client_tab(self):
         label = tk.Label(self.client_tab, text="Klienci", font=("Arial", 14))
         label.pack(pady=10)
@@ -75,7 +74,6 @@ class StationManagerApp:
         self.client_entries = form_frame['entries']
         self.create_crud_buttons(form_frame['frame'], self.client_entries, self.client_tree)
 
-    # ---------------- Zakładka MAPY ----------------
     def setup_map_tab(self):
         label = tk.Label(self.map_tab, text="Mapa obiektów (tkintermapview)", font=("Arial", 14))
         label.pack(pady=10)
@@ -83,10 +81,9 @@ class StationManagerApp:
         self.map_widget = tkintermapview.TkinterMapView(self.map_tab, width=1000, height=600)
         self.map_widget.pack(fill="both", expand=True, padx=20, pady=20)
 
-        self.map_widget.set_position(52.23, 21.00)  # Warszawa
+        self.map_widget.set_position(52.23, 21.00)
         self.map_widget.set_zoom(6)
 
-    # ---------------- Pomocnicze ----------------
     def create_form_frame(self, parent, fields):
         frame = tk.Frame(parent)
         frame.pack(pady=10, fill="x", padx=20)
@@ -119,7 +116,7 @@ class StationManagerApp:
                     raise ValueError
                 if 'koordynaty' in entries_dict:
                     coord_value = entries_dict['koordynaty'].get().replace(',', '.')
-                    lat_lon = coord_value.split()
+                    lat_lon = coord_value.strip().split()
                     if len(lat_lon) != 2:
                         raise ValueError
                     lat, lon = float(lat_lon[0]), float(lat_lon[1])
@@ -132,8 +129,24 @@ class StationManagerApp:
             if any(v == "" for v in values):
                 messagebox.showerror("Błąd", "Wszystkie pola muszą być wypełnione.")
                 return
+
             tree_widget.insert("", "end", values=values)
             clear_entries()
+
+            # Dodaj marker do mapy
+            if hasattr(self, 'map_widget') and 'koordynaty' in entries_dict:
+                try:
+                    coord_value = entries_dict['koordynaty'].get().replace(',', '.')
+                    lat_lon = coord_value.strip().split()
+                    if len(lat_lon) == 2:
+                        lat, lon = float(lat_lon[0]), float(lat_lon[1])
+                        label_entry = entries_dict.get('nazwa') or entries_dict.get('imię')
+                        text = label_entry.get() if label_entry else "Obiekt"
+                        marker = self.map_widget.set_marker(lat, lon, text=text)
+                        self.map_widget.set_position(lat, lon)
+                        self.markers.append(marker)
+                except Exception as e:
+                    print("Błąd ustawiania znacznika:", e)
 
         def load_item():
             selected = tree_widget.selection()
@@ -168,11 +181,9 @@ class StationManagerApp:
         tk.Button(button_frame, text="Zapisz", command=save_item).pack(pady=2)
         tk.Button(button_frame, text="Usuń", command=delete_item).pack(pady=2)
 
-        # Krótka adnotacja w dolnym rogu
         hint = tk.Label(self.root, text="Koordynaty: np. 50.061 19.938 – szer. dł.", font=("Arial", 8), fg="gray")
         hint.place(relx=1.0, rely=1.0, anchor="se", x=-10, y=-10)
 
-# ---------------- RUN ----------------
 if __name__ == "__main__":
     root = tk.Tk()
     app = StationManagerApp(root)
